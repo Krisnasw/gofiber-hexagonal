@@ -1,17 +1,17 @@
 package config
 
 import (
+	"app-hexagonal/internal/delivery/http"
+	"app-hexagonal/internal/delivery/http/route"
+	"app-hexagonal/internal/repository"
+	"app-hexagonal/internal/usecase"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-
-	"app-hexagonalinternal/delivery/http"
-	"app-hexagonalinternal/delivery/http/route"
-	"app-hexagonalinternal/repository"
-	"app-hexagonalinternal/usecase"
 )
 
 type BoostrapConfig struct {

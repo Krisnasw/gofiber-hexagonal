@@ -1,11 +1,10 @@
 package main
 
 import (
+	"app-hexagonal/config"
 	"fmt"
 
 	"go.uber.org/zap"
-
-	config "app-hexagonalconfig"
 )
 
 // @title SuperFood Panel Service API

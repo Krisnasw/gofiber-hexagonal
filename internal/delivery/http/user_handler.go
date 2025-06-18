@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 
-	"app-hexagonalinternal/usecase"
+	"app-hexagonal/internal/usecase"
 )
 
 type UserHandler struct {

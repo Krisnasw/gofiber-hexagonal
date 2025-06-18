@@ -4,8 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 
-	_ "app-hexagonaldocs"
-	"app-hexagonalinternal/delivery/http"
+	"app-hexagonal/internal/delivery/http"
 )
 
 type RouteConfig struct {

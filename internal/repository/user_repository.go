@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"gorm.io/gorm"
+	"app-hexagonal/internal/domain"
 
-	"app-hexagonalinternal/domain"
+	"gorm.io/gorm"
 )
 
 type UserRepository struct {

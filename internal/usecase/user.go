@@ -1,8 +1,6 @@
 package usecase
 
-import (
-	"app-hexagonalinternal/domain"
-)
+import "app-hexagonal/internal/domain"
 
 type UserUsecase struct {
 	repo domain.UserRepository

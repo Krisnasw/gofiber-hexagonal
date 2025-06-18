@@ -1,15 +1,14 @@
 package config
 
 import (
+	"app-hexagonal/pkg/mysql"
+	"app-hexagonal/pkg/postgres"
 	"time"
 
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
-	"app-hexagonalpkg/mysql"
-	"app-hexagonalpkg/postgres"
 )
 
 func NewGormDB(cfg *viper.Viper, log *zap.Logger) (*gorm.DB, error) {
