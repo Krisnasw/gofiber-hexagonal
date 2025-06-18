@@ -1,0 +1,15 @@
+basePath: /
+host: localhost:4001
+info:
+  contact:
+    email: dev.superfood@gmail.com
+    name: SuperFood
+  description: This is a server for SuperFood Panel Service API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: SuperFood Panel Service API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

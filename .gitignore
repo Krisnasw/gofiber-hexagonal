@@ -1,0 +1,15 @@
+# Development artifacts
+.env
+.idea/
+*.log
+*.tmp
+
+# Build output
+bin/
+dist/
+
+# Dependency directories
+vendor/
+node_modules/
+
+application
