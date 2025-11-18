@@ -36,6 +36,7 @@ func Boostrap(config *BoostrapConfig) {
 	routeConfig := route.RouteConfig{
 		App:         config.App,
 		UserHandler: userHandler,
+		Logger:      config.Log,
 	}
 	routeConfig.Setup()
 }

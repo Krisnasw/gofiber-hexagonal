@@ -4,11 +4,19 @@ import (
 	"net/http"
 )
 
+// APIResponse represents the standard API response structure
 type APIResponse struct {
 	Error      bool        `json:"error"`
 	StatusCode int         `json:"code"`
 	Message    string      `json:"message"`
 	Data       interface{} `json:"data"`
+}
+
+// ErrorResponseDetail provides detailed error information
+type ErrorResponseDetail struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Details string `json:"details,omitempty"`
 }
 
 // SuccessResponse creates a standardized success response.
@@ -34,6 +42,16 @@ func ErrorResponse(data interface{}, code int, message string) APIResponse {
 		StatusCode: code,
 		Message:    message,
 		Data:       data,
+	}
+}
+
+// DetailedErrorResponse creates an error response with additional details
+func DetailedErrorResponse(code int, message, details string) APIResponse {
+	return APIResponse{
+		Error:      true,
+		StatusCode: code,
+		Message:    message,
+		Data:       ErrorResponseDetail{Code: code, Message: message, Details: details},
 	}
 }
 

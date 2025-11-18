@@ -24,6 +24,12 @@ func main() {
 		panic(err)
 	}
 
+	// Load structured configuration for validation
+	structuredConfig, err := config.LoadStructuredConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	log, err := config.NewLogger(cfg)
 	if err != nil {
 		panic(err)
@@ -58,6 +64,7 @@ func main() {
 	// Start server
 	log.Info("Starting server",
 		zap.String("env", cfg.GetString("APP_ENV")),
+		zap.String("app_name", structuredConfig.App.Name),
 		zap.Int("port", cfg.GetInt("APP_PORT")),
 	)
 
