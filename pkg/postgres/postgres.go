@@ -80,17 +80,18 @@ func connect(param *psql) (*gorm.DB, error) {
 
 	db, err := gorm.Open(driverPostgres.Open(dsn), cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	mysqlDb, err := db.DB()
-	mysqlDb.SetMaxOpenConns(param.maxOpenConnection)
-	mysqlDb.SetConnMaxLifetime(time.Duration(param.connectionMaxLifetimeInSecond) * time.Minute)
-	mysqlDb.SetMaxIdleConns(param.maxOpenConnection)
+	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get database handle: %w", err)
 	}
-	return db, err
+	sqlDB.SetMaxOpenConns(param.maxOpenConnection)
+	sqlDB.SetConnMaxLifetime(time.Duration(param.connectionMaxLifetimeInSecond) * time.Second)
+	sqlDB.SetMaxIdleConns(param.maxIdleConnection)
+
+	return db, nil
 }
 
 func SetMaxIdleConns(conns int) pgsqlOption {
@@ -109,10 +110,10 @@ func SetMaxOpenConns(conns int) pgsqlOption {
 	}
 }
 
-func SetConnMaxLifetime(conns int) pgsqlOption {
+func SetConnMaxLifetime(seconds int) pgsqlOption {
 	return func(c *psql) {
-		if conns > 0 {
-			c.connectionMaxLifetimeInSecond = conns
+		if seconds > 0 {
+			c.connectionMaxLifetimeInSecond = seconds
 		}
 	}
 }
@@ -140,6 +141,15 @@ func SetTimezone(timezone string) pgsqlOption {
 			c.DBTimezone = "Etc/UTC"
 		} else {
 			c.DBTimezone = timezone
+		}
+	}
+}
+
+// SetTablePrefix sets the table prefix for all tables
+func SetTablePrefix(prefix string) pgsqlOption {
+	return func(c *psql) {
+		c.namingStrategy = schema.NamingStrategy{
+			TablePrefix: prefix,
 		}
 	}
 }

@@ -20,6 +20,7 @@ type AppConfig struct {
 	Name        string `mapstructure:"name" validate:"required"`
 	Version     string `mapstructure:"version"`
 	Debug       bool   `mapstructure:"debug"`
+	GRPCPort    int    `mapstructure:"grpc_port" validate:"required,min=1,max=65535"`
 }
 
 // DatabaseConfig holds database configuration

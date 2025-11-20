@@ -51,11 +51,11 @@ func connect(param *redisConfig) (*redis.Pool, error) {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%s", param.Host, param.Port))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed to connect to Redis: %w", err)
 			}
 			if len(param.Password) > 0 {
 				if _, err := c.Do("AUTH", param.Password); err != nil {
-					return nil, err
+					return nil, fmt.Errorf("failed to authenticate with Redis: %w", err)
 				}
 			}
 			return c, nil
@@ -65,7 +65,7 @@ func connect(param *redisConfig) (*redis.Pool, error) {
 	defer conn.Close()
 	_, err := conn.Do("PING")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to ping Redis: %w", err)
 	}
 
 	return redisPool, nil

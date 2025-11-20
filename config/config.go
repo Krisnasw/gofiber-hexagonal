@@ -16,6 +16,7 @@ func LoadConfig() (*viper.Viper, error) {
 	v.SetDefault("APP_VERSION", "1.0.0")
 	v.SetDefault("APP_DEBUG", false)
 	v.SetDefault("APP_PORT", 4001)
+	v.SetDefault("GRPC_PORT", 4002)
 	v.SetDefault("APP_DEFAULT_LANG", "en")
 	v.SetDefault("APP_TIMEZONE", "+07:00")
 	v.SetDefault("APP_PREFORK", false)
@@ -92,6 +93,7 @@ func LoadStructuredConfig() (*Config, error) {
 	config.App.Name = v.GetString("APP_NAME")
 	config.App.Version = v.GetString("APP_VERSION")
 	config.App.Debug = v.GetBool("APP_DEBUG")
+	config.App.GRPCPort = v.GetInt("GRPC_PORT")
 
 	config.Database.Host = v.GetString("DATABASE_HOST")
 	config.Database.Port = v.GetInt("DATABASE_PORT")

@@ -2,7 +2,11 @@ package main
 
 import (
 	"app-hexagonal/config"
+	"app-hexagonal/internal/delivery/grpc"
+	"app-hexagonal/internal/repository"
+	"app-hexagonal/internal/usecase"
 	"fmt"
+	"os"
 
 	"go.uber.org/zap"
 )
@@ -18,6 +22,12 @@ import (
 // @host localhost:4001
 // @BasePath /
 func main() {
+	// Check if we're running in worker mode
+	if len(os.Args) > 1 && os.Args[1] == "worker" {
+		runWorker()
+		return
+	}
+
 	// Load configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -49,23 +59,39 @@ func main() {
 		log.Fatal("Failed to connect to RabbitMQ", zap.Error(err))
 	}
 
+	// Create repository and usecase
+	userRepository := repository.NewUserRepository(db)
+	userUsecase := usecase.NewUserUsecase(userRepository)
+
+	// Start gRPC server in a goroutine
+	grpcServer := grpc.NewServer(log, fmt.Sprintf("%d", structuredConfig.App.GRPCPort))
+	go func() {
+		if err := grpcServer.Start(userUsecase); err != nil {
+			log.Error("Failed to start gRPC server", zap.Error(err))
+		}
+	}()
+	defer grpcServer.Stop()
+
+	// Set up Fiber app
 	app := config.NewFiberConfig(cfg)
 
 	config.Boostrap(&config.BoostrapConfig{
-		DB:       db,
-		App:      app,
-		Log:      log,
-		Validate: validate,
-		Config:   cfg,
-		RabbitMQ: rabbitMq,
+		DB:          db,
+		App:         app,
+		Log:         log,
+		Validate:    validate,
+		Config:      cfg,
+		RabbitMQ:    rabbitMq,
+		UserUsecase: userUsecase,
 	})
 
 	appPort := cfg.GetInt("APP_PORT")
 	// Start server
-	log.Info("Starting server",
+	log.Info("Starting servers",
 		zap.String("env", cfg.GetString("APP_ENV")),
 		zap.String("app_name", structuredConfig.App.Name),
-		zap.Int("port", cfg.GetInt("APP_PORT")),
+		zap.Int("http_port", cfg.GetInt("APP_PORT")),
+		zap.Int("grpc_port", structuredConfig.App.GRPCPort),
 	)
 
 	err = app.Listen(fmt.Sprintf(":%d", appPort))

@@ -116,10 +116,10 @@ func SetMaxOpenConns(conns int) mysqlOption {
 	}
 }
 
-func SetConnMaxLifetime(conns int) mysqlOption {
+func SetConnMaxLifetime(seconds int) mysqlOption {
 	return func(c *mysql) {
-		if conns > 0 {
-			c.connectionMaxLifetimeInSecond = conns
+		if seconds > 0 {
+			c.connectionMaxLifetimeInSecond = seconds
 		}
 	}
 }

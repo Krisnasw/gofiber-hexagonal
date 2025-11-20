@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "app-hexagonal/api/v1";
+
+// UserService represents the user management service
+service UserService {
+  // GetUser retrieves a user by ID
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {}
+  
+  // CreateUser creates a new user
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+}
+
+// User represents a user entity
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+}
+
+// GetUserRequest represents the request to get a user
+message GetUserRequest {
+  string id = 1;
+}
+
+// GetUserResponse represents the response for getting a user
+message GetUserResponse {
+  bool error = 1;
+  int32 code = 2;
+  string message = 3;
+  User data = 4;
+}
+
+// CreateUserRequest represents the request to create a user
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+// CreateUserResponse represents the response for creating a user
+message CreateUserResponse {
+  bool error = 1;
+  int32 code = 2;
+  string message = 3;
+  User data = 4;
+}

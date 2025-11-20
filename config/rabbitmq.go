@@ -1,20 +1,23 @@
 package config
 
 import (
+	"app-hexagonal/pkg/rabbitmq"
+
 	"github.com/spf13/viper"
 	"github.com/streadway/amqp"
 	"go.uber.org/zap"
 )
 
 func NewRabbitMQConnection(cfg *viper.Viper, log *zap.Logger) (*amqp.Connection, error) {
-	conn, err := amqp.Dial(cfg.GetString("RABBITMQ_URL"))
+	// Use the new RabbitMQ package for connection
+	rabbitConn, err := rabbitmq.New(cfg.GetString("RABBITMQ_URL"))
 	if err != nil {
 		log.Error("Failed to connect to RabbitMQ", zap.Error(err))
 		return nil, err
 	}
 
 	log.Info("Successfully connected to RabbitMQ")
-	return conn, nil
+	return rabbitConn.GetConnection(), nil
 }
 
 func SetupRabbitMQChannels(conn *amqp.Connection, log *zap.Logger) (*amqp.Channel, error) {

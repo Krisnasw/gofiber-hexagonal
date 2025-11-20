@@ -4,6 +4,7 @@ import (
 	"app-hexagonal/internal/delivery/http"
 	"app-hexagonal/internal/delivery/http/route"
 	"app-hexagonal/internal/repository"
+	"app-hexagonal/internal/resilience"
 	"app-hexagonal/internal/usecase"
 
 	"github.com/go-playground/validator/v10"
@@ -15,12 +16,13 @@ import (
 )
 
 type BoostrapConfig struct {
-	DB       *gorm.DB
-	App      *fiber.App
-	Log      *zap.Logger
-	Validate *validator.Validate
-	Config   *viper.Viper
-	RabbitMQ *amqp.Connection
+	DB          *gorm.DB
+	App         *fiber.App
+	Log         *zap.Logger
+	Validate    *validator.Validate
+	Config      *viper.Viper
+	RabbitMQ    *amqp.Connection
+	UserUsecase *usecase.UserUsecase
 }
 
 func Boostrap(config *BoostrapConfig) {
@@ -28,10 +30,19 @@ func Boostrap(config *BoostrapConfig) {
 	userRepository := repository.NewUserRepository(config.DB)
 
 	// UseCase
-	userUseCase := usecase.NewUserUsecase(userRepository)
+	var userUseCase *usecase.UserUsecase
+	if config.UserUsecase != nil {
+		userUseCase = config.UserUsecase
+	} else {
+		userUseCase = usecase.NewUserUsecase(userRepository)
+	}
+
+	// Resilience Handler
+	resilienceConfig := resilience.DefaultResilienceConfig()
+	resilienceHandler := resilience.NewResilienceHandler(resilienceConfig)
 
 	// Handler
-	userHandler := http.NewUserHandler(userUseCase, config.Log)
+	userHandler := http.NewUserHandler(userUseCase, config.Log, resilienceHandler)
 
 	routeConfig := route.RouteConfig{
 		App:         config.App,

@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 
 	helper "app-hexagonal/internal/helper"
+	"app-hexagonal/internal/resilience"
 	"app-hexagonal/internal/usecase"
 )
 
@@ -16,16 +17,18 @@ type UserRequest struct {
 }
 
 type UserHandler struct {
-	uc       *usecase.UserUsecase
-	logger   *zap.Logger
-	validate *validator.Validate
+	uc         *usecase.UserUsecase
+	logger     *zap.Logger
+	validate   *validator.Validate
+	resilience *resilience.ResilienceHandler
 }
 
-func NewUserHandler(uc *usecase.UserUsecase, logger *zap.Logger) *UserHandler {
+func NewUserHandler(uc *usecase.UserUsecase, logger *zap.Logger, resilience *resilience.ResilienceHandler) *UserHandler {
 	return &UserHandler{
-		uc:       uc,
-		logger:   logger,
-		validate: validator.New(),
+		uc:         uc,
+		logger:     logger,
+		validate:   validator.New(),
+		resilience: resilience,
 	}
 }
 
