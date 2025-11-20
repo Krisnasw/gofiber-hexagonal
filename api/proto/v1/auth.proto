@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package v1;
+
+option go_package = "app-hexagonal/api/v1";
+
+// AuthService represents the authentication service
+service AuthService {
+  // Login authenticates a user and returns tokens
+  rpc Login(LoginRequest) returns (LoginResponse) {}
+  
+  // RefreshToken refreshes an access token using a refresh token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {}
+  
+  // Logout invalidates the user's tokens
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {}
+}
+
+// Credentials represents user login credentials
+message Credentials {
+  string email = 1;
+  string password = 2;
+}
+
+// LoginRequest represents the request to login
+message LoginRequest {
+  Credentials credentials = 1;
+}
+
+// LoginResponse represents the response for login
+message LoginResponse {
+  bool error = 1;
+  int32 code = 2;
+  string message = 3;
+  TokenData data = 4;
+}
+
+// RefreshTokenRequest represents the request to refresh a token
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// RefreshTokenResponse represents the response for token refresh
+message RefreshTokenResponse {
+  bool error = 1;
+  int32 code = 2;
+  string message = 3;
+  TokenData data = 4;
+}
+
+// LogoutRequest represents the request to logout
+message LogoutRequest {
+  string access_token = 1;
+}
+
+// LogoutResponse represents the response for logout
+message LogoutResponse {
+  bool error = 1;
+  int32 code = 2;
+  string message = 3;
+}
+
+// TokenData represents the token data in responses
+message TokenData {
+  string access_token = 1;
+  string refresh_token = 2;
+  string token_type = 3;
+  int32 expires_in = 4;
+}

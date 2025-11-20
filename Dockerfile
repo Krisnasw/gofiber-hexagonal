@@ -16,8 +16,8 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
-# Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
+# Build the binary (build all files in cmd directory)
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/...
 
 # Final stage
 FROM alpine:latest

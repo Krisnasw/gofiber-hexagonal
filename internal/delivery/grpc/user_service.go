@@ -4,8 +4,8 @@ import (
 	"context"
 
 	v1 "app-hexagonal/api/v1"
+	"app-hexagonal/internal/application"
 	"app-hexagonal/internal/domain"
-	"app-hexagonal/internal/usecase"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
@@ -14,14 +14,14 @@ import (
 // UserServiceServer implements the UserService gRPC service
 type UserServiceServer struct {
 	v1.UnimplementedUserServiceServer
-	userUsecase *usecase.UserUsecase
+	userService *application.UserService
 	logger      *zap.Logger
 }
 
 // NewUserServiceServer creates a new UserServiceServer
-func NewUserServiceServer(userUsecase *usecase.UserUsecase, logger *zap.Logger) *UserServiceServer {
+func NewUserServiceServer(userService *application.UserService, logger *zap.Logger) *UserServiceServer {
 	return &UserServiceServer{
-		userUsecase: userUsecase,
+		userService: userService,
 		logger:      logger,
 	}
 }
@@ -30,7 +30,7 @@ func NewUserServiceServer(userUsecase *usecase.UserUsecase, logger *zap.Logger) 
 func (s *UserServiceServer) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserResponse, error) {
 	s.logger.Info("gRPC: Getting user by ID", zap.String("user_id", req.GetId()))
 
-	user, err := s.userUsecase.GetUserByID(req.GetId())
+	user, err := s.userService.GetUserByID(req.GetId())
 	if err != nil {
 		s.logger.Error("gRPC: Failed to get user", zap.String("user_id", req.GetId()), zap.Error(err))
 		return &v1.GetUserResponse{
@@ -69,7 +69,7 @@ func (s *UserServiceServer) CreateUser(ctx context.Context, req *v1.CreateUserRe
 	}
 
 	// Save user
-	err := s.userUsecase.CreateUser(user)
+	err := s.userService.CreateUser(user)
 	if err != nil {
 		s.logger.Error("gRPC: Failed to create user", zap.Error(err))
 		return &v1.CreateUserResponse{

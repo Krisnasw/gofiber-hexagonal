@@ -2,6 +2,16 @@ package usecase
 
 import "app-hexagonal/internal/domain"
 
+// UserUsecaseInterface defines the interface for user use cases
+// This helps with dependency inversion in our hexagonal architecture
+type UserUsecaseInterface interface {
+	GetUserByID(id string) (*domain.User, error)
+	GetUserByEmail(email string) (*domain.User, error)
+	CreateUser(user *domain.User) error
+	UpdateUser(user *domain.User) error
+	DeleteUser(id string) error
+}
+
 type UserUsecase struct {
 	repo domain.UserRepository
 }

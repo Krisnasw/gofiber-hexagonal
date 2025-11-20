@@ -4,7 +4,7 @@ import (
 	"net"
 
 	v1 "app-hexagonal/api/v1"
-	"app-hexagonal/internal/usecase"
+	"app-hexagonal/internal/application"
 
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -27,13 +27,17 @@ func NewServer(logger *zap.Logger, port string) *Server {
 }
 
 // Start starts the gRPC server
-func (s *Server) Start(userUsecase *usecase.UserUsecase) error {
+func (s *Server) Start(userService *application.UserService, authService *application.AuthService) error {
 	// Create a new gRPC server
 	s.server = grpc.NewServer()
 
 	// Register the user service
-	userService := NewUserServiceServer(userUsecase, s.logger)
-	v1.RegisterUserServiceServer(s.server, userService)
+	userServiceServer := NewUserServiceServer(userService, s.logger)
+	v1.RegisterUserServiceServer(s.server, userServiceServer)
+
+	// Register the auth service
+	authServiceServer := NewAuthServiceServer(authService, s.logger)
+	v1.RegisterAuthServiceServer(s.server, authServiceServer)
 
 	// Enable reflection for debugging
 	reflection.Register(s.server)

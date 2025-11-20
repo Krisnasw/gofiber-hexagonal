@@ -17,13 +17,13 @@ type UserRequest struct {
 }
 
 type UserHandler struct {
-	uc         *usecase.UserUsecase
+	uc         usecase.UserUsecaseInterface
 	logger     *zap.Logger
 	validate   *validator.Validate
 	resilience *resilience.ResilienceHandler
 }
 
-func NewUserHandler(uc *usecase.UserUsecase, logger *zap.Logger, resilience *resilience.ResilienceHandler) *UserHandler {
+func NewUserHandler(uc usecase.UserUsecaseInterface, logger *zap.Logger, resilience *resilience.ResilienceHandler) *UserHandler {
 	return &UserHandler{
 		uc:         uc,
 		logger:     logger,

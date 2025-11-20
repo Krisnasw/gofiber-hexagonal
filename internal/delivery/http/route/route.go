@@ -14,6 +14,7 @@ import (
 type RouteConfig struct {
 	App         *fiber.App
 	UserHandler *http.UserHandler
+	AuthHandler *http.AuthHandler
 	Logger      *zap.Logger
 }
 
@@ -36,6 +37,11 @@ func (c *RouteConfig) SetupGuestRoute() {
 	// Health check endpoints
 	c.App.Get("/health", c.HealthCheck)
 	c.App.Get("/ready", c.ReadinessCheck)
+
+	// Authentication routes
+	if c.AuthHandler != nil {
+		c.AuthHandler.RegisterRoutes(c.App)
+	}
 }
 
 func (c *RouteConfig) SetupAuthRoute() {

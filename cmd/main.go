@@ -2,6 +2,7 @@ package main
 
 import (
 	"app-hexagonal/config"
+	"app-hexagonal/internal/application"
 	"app-hexagonal/internal/delivery/grpc"
 	"app-hexagonal/internal/repository"
 	"app-hexagonal/internal/usecase"
@@ -62,11 +63,16 @@ func main() {
 	// Create repository and usecase
 	userRepository := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository)
+	authUsecase := usecase.NewAuthUsecase(userRepository)
+
+	// Create application services
+	userService := application.NewUserService(userUsecase)
+	authService := application.NewAuthService(authUsecase)
 
 	// Start gRPC server in a goroutine
 	grpcServer := grpc.NewServer(log, fmt.Sprintf("%d", structuredConfig.App.GRPCPort))
 	go func() {
-		if err := grpcServer.Start(userUsecase); err != nil {
+		if err := grpcServer.Start(userService, authService); err != nil {
 			log.Error("Failed to start gRPC server", zap.Error(err))
 		}
 	}()

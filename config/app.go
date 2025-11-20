@@ -22,20 +22,24 @@ type BoostrapConfig struct {
 	Validate    *validator.Validate
 	Config      *viper.Viper
 	RabbitMQ    *amqp.Connection
-	UserUsecase *usecase.UserUsecase
+	UserUsecase usecase.UserUsecaseInterface
 }
 
 func Boostrap(config *BoostrapConfig) {
 	// Repository
 	userRepository := repository.NewUserRepository(config.DB)
+	// No need for authRepository since we're using JWT
 
 	// UseCase
-	var userUseCase *usecase.UserUsecase
+	var userUseCase usecase.UserUsecaseInterface
 	if config.UserUsecase != nil {
 		userUseCase = config.UserUsecase
 	} else {
 		userUseCase = usecase.NewUserUsecase(userRepository)
 	}
+
+	// Create auth usecase (no need for auth repository with JWT)
+	authUseCase := usecase.NewAuthUsecase(userRepository)
 
 	// Resilience Handler
 	resilienceConfig := resilience.DefaultResilienceConfig()
@@ -43,10 +47,12 @@ func Boostrap(config *BoostrapConfig) {
 
 	// Handler
 	userHandler := http.NewUserHandler(userUseCase, config.Log, resilienceHandler)
+	authHandler := http.NewAuthHandler(authUseCase, config.Log, resilienceHandler)
 
 	routeConfig := route.RouteConfig{
 		App:         config.App,
 		UserHandler: userHandler,
+		AuthHandler: authHandler,
 		Logger:      config.Log,
 	}
 	routeConfig.Setup()
