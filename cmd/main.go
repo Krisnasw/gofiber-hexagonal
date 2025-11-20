@@ -7,7 +7,6 @@ import (
 	"app-hexagonal/internal/repository"
 	"app-hexagonal/internal/usecase"
 	"fmt"
-	"os"
 
 	"go.uber.org/zap"
 )
@@ -23,12 +22,6 @@ import (
 // @host localhost:4001
 // @BasePath /
 func main() {
-	// Check if we're running in worker mode
-	if len(os.Args) > 1 && os.Args[1] == "worker" {
-		runWorker()
-		return
-	}
-
 	// Load configuration
 	cfg, err := config.LoadConfig()
 	if err != nil {
